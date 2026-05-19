@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COGNIVOLTS | EV Trip Planner for India</title>
+    <meta name="description" content="COGNIVOLT helps riders compare electric two-wheelers, estimate usable range, and plan EV routes across Indian cities.">
+    <meta name="theme-color" content="#090909">
+    
+    <!-- Leaflet Map -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div id="cur"></div>
+    <div id="ring"></div>
+
+    <!-- Intro Animation -->
+    <div id="intro">
+        <div class="ib">COGNIVOLTS</div>
+        <div class="it">EV TRIP PLANNER</div>
+        <div class="il"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo" onclick="document.getElementById('hero').scrollIntoView({ behavior: 'smooth' })" style="cursor: pointer;">COGNIVOLTS</div>
+        <div class="links">
+            <a href="#models" class="on">BIKES</a>
+            <a href="#planner">PLANNER</a>
+            <a href="#specs">SPECS</a>
+            <a href="#contact-section">CONTACT</a>
+        </div>
+        <div class="greeting" id="greeting"></div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-bg"></div>
+        <img src="images/ev-bikefinal.jpg" class="hero-img">
+        <div class="vig"></div>
+        <div class="ht">
+            <div>
+                <h1 class="hl">PLAN YOUR</h1>
+                <h1 class="hl i r">EV RIDE</h1>
+            </div>
+            <div class="hr">
+                <h2 class="hl">ACROSS INDIA</h2>
+            </div>
+        </div>
+        <button class="hero-cta" onclick="document.getElementById('planner').scrollIntoView({ behavior: 'smooth' })">PLAN TRIP</button>
+    </section>
+
+    <!-- Feature Cards -->
+    <section class="feature-cards">
+        <div class="hbc">
+            <div class="hc">
+                <div class="hc-tag">Smart Planning</div>
+                <h3 class="hc-title">Compare EV Models</h3>
+                <p class="hc-body">Select from popular electric two-wheelers and compare their range, performance, and efficiency ratings.</p>
+                <div class="hc-arr">→</div>
+            </div>
+            <div class="hc hl2">
+                <div class="hc-badge">LIVE</div>
+                <div class="hc-tag">Route Optimization</div>
+                <h3 class="hc-title">Plan Your Route</h3>
+                <p class="hc-body">Get optimized routes between cities with charging station stops and real-time weather impact analysis.</p>
+                <div class="hc-arr">→</div>
+            </div>
+            <div class="hc">
+                <div class="hc-tag">Real-Time Data</div>
+                <h3 class="hc-title">Live Charging Hubs</h3>
+                <p class="hc-body">Discover fast-charging stations across major Indian cities with real-time availability and infrastructure details.</p>
+                <div class="hc-arr">→</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Models Section -->
+    <section id="models" class="models">
+        <div class="models-bg-layer">
+            <div class="models-bg-grid"></div>
+            <div class="models-bg-glow"></div>
+        </div>
+        <div class="sec-head">
+            <h2 class="sh-t">Featured <em>EV Models</em></h2>
+            <a href="#models" class="sh-link">VIEW ALL BIKES →</a>
+        </div>
+        <div class="ev-grid" id="ev-grid"></div>
+
+    <!-- Planner Section -->
+    <section id="planner" class="planner">
+        <div class="eyebrow">Smart Trip Planner</div>
+        <h2 class="s-head">Plan <em>Your Route</em></h2>
+
+        <div class="pw">
+            <div class="pi">
+                <label>START LOCATION</label>
+                <select id="sc" onchange="upd()"></select>
+            </div>
+            <div class="pi">
+                <label>DESTINATION</label>
+                <select id="ec" onchange="upd()"></select>
+            </div>
+            <div class="pi">
+                <label>SELECT BIKE</label>
+                <select id="evs" onchange="upd()"></select>
+            </div>
+            <div class="pi">
+                <label>BATTERY LEVEL (%)</label>
+                <div class="slider-container">
+                    <input type="range" id="sl" min="0" max="100" value="100" onchange="upd()">
+                    <span class="slider-value" id="sl-val">100%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="rv">
+            <div class="rv-item">
+                <span class="rv-label">Available Range</span>
+                <span class="rv-value" id="rva">- km</span>
+            </div>
+            <div class="rv-item">
+                <span class="rv-label">Trip Distance</span>
+                <span class="rv-value" id="rvd">- km</span>
+            </div>
+            <div class="rv-item">
+                <span class="rv-label">Status</span>
+                <span class="rv-status" id="rvs">SELECT</span>
+            </div>
+        </div>
+
+        <button class="cta cta-lg" id="pb" onclick="planTrip()">Plan My Trip</button>
+    </section>
+
+    <!-- Map Section -->
+    <section id="mapS" class="map-section">
+        <h2 class="section-title">Your Trip Overview</h2>
+        <div id="map" class="map-container"></div>
+        
+        <div class="route-stats" id="route-stats">
+            <div class="stat-item">
+                <span class="stat-label">Distance</span>
+                <span class="stat-value" id="rsd">- km</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Est. Time</span>
+                <span class="stat-value" id="rst">- h</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Charging Stops</span>
+                <span class="stat-value" id="rss">-</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Range Left</span>
+                <span class="stat-value" id="rsa">- %</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Charging Stations Section -->
+    <section id="chargingS" class="charging-section" style="display:none;">
+        <div class="sec-head">
+            <h2 class="sh-t">En-Route <em>Charging Hubs</em></h2>
+            <span class="sh-link" id="charging-count">0 STATIONS FOUND</span>
+        </div>
+        <div class="charging-grid" id="charging-grid"></div>
+    </section>
+
+    <!-- Environmental Data Section -->
+    <section id="envS" class="env-section">
+        <h2 class="section-title">Weather & Efficiency</h2>
+        <div class="env-grid">
+            <div class="env-card">
+                <div class="env-icon">🌡️</div>
+                <div class="env-info">
+                    <span class="env-value" id="et">- C</span>
+                    <span class="env-label" id="etn">Temperature</span>
+                </div>
+            </div>
+            <div class="env-card">
+                <div class="env-icon">💨</div>
+                <div class="env-info">
+                    <span class="env-value" id="ew">- km/h</span>
+                    <span class="env-label" id="ewn">Wind Speed</span>
+                </div>
+            </div>
+            <div class="env-card">
+                <div class="env-icon">💧</div>
+                <div class="env-info">
+                    <span class="env-value" id="eh">- %</span>
+                    <span class="env-label" id="ehn">Humidity</span>
+                </div>
+            </div>
+            <div class="env-card">
+                <div class="env-icon">⚡</div>
+                <div class="env-info">
+                    <span class="env-value" id="ee">- %</span>
+                    <span class="env-label">Efficiency</span>
+                </div>
+            </div>
+        </div>
+        <div class="efficiency-bar">
+            <div class="efficiency-fill" id="eef"></div>
+        </div>
+    </section>
+
+    <!-- Specs Section -->
+  <<  <section id="specs" class="specs-section">
+        <div class="sec-head">
+            <h2 class="sh-t">Complete <em>Specifications</em></h2>
+        </div>
+        <div class="specs-grid" id="specs-grid"></div>
+    </section>
+
+    <!-- ===== IMMERSIVE GALLERY SECTION ===== -->
+   <<!--- <section id="gallery" class="gallery-section">
+        <div class="gallery-header">
+            <div class="sec-head" style="margin-bottom: 0;">
+                <h2 class="sh-t">Your <em>Journey</em></h2>
+                <div class="gallery-nav">
+                    <button class="g-nav-btn" id="g-prev" onclick="galleryPrev()">←</button>
+                    <span class="g-page-ind" id="g-page">SHEET 1 / 5</span>
+                    <button class="g-nav-btn" id="g-next" onclick="galleryNext()">→</button>
+                </div>
+            </div>
+            <p class="gallery-hint">DRAG OR MOVE CURSOR → TO EXPLORE · CLICK CARD TO ADD IMAGE</p>
+        </div>
+
+        <!-- Cursor progress bar -->
+       <!----<div class="g-cursor-track">
+            <div class="g-cursor-fill" id="g-cursor-fill"></div>
+        </div> ->
+
+        <div class="gallery-viewport" id="gallery-viewport">
+            <div class="gallery-track" id="gallery-track">
+                <!-- JS will inject sheets here -->
+           <!--- </div>
+        </div>
+
+        <!-- Sheet dots -->
+        <!--<div class="gallery-dots" id="gallery-dots"></div>
+    </section>-->
+>>
+    <!-- Contact Section -->
+    <section id="contact-section" class="contact-section">
+        <div class="contact-inner">
+            <div class="eyebrow">Get In Touch</div>
+            <h2 class="s-head">Reach <em>Out To Us</em></h2>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span class="contact-icon">📍</span>
+                        <div>
+                            <div class="contact-label">LOCATION</div>
+                            <div class="contact-val">Bangalore, Karnataka, India</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">📧</span>
+                        <div>
+                            <div class="contact-label">EMAIL</div>
+                            <div class="contact-val">arunsagargowda28@gmail.com</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-icon">⚡</span>
+                        <div>
+                            <div class="contact-label">SUPPORT</div>
+                            <div class="contact-val">support@cognivolts.in</div>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form" onsubmit="handleContact(event)">
+                    <div class="cf-row">
+                        <input type="text" id="cf-name" placeholder="YOUR NAME" class="cf-input" required>
+                        <input type="email" id="cf-email" placeholder="YOUR EMAIL" class="cf-input" required>
+                    </div>
+                    <input type="text" id="cf-subject" placeholder="SUBJECT" class="cf-input" style="width:100%" required>
+                    <textarea id="cf-message" class="cf-input cf-textarea" placeholder="YOUR MESSAGE" required></textarea>
+                    <button type="submit" class="cta cta-lg" style="width:100%">SEND MESSAGE →</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>COGNIVOLTS</h4>
+                <p>Your trusted EV trip planner for India</p>
+            </div>
+            <div class="footer-section">
+                <h4>LINKS</h4>
+                <ul>
+                    <li><a href="#models">Models</a></li>
+                    <li><a href="#planner">Planner</a></li>
+                    <li><a href="#specs">Specs</a></li>
+                    <li><a href="#contact-section">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>LEGAL</h4>
+                <ul>
+                    <li><a href="#">Privacy</a></li>
+                    <li><a href="#">Terms</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span id="year">2026</span> COGNIVOLTS. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="jss/data.js"></script>
+    <script src="jss/utils.js"></script>
+    <script src="jss/cursor.js"></script>
+    <script src="jss/navigation.js"></script>
+    <script src="jss/planner.js"></script>
+    <script src="jss/app.js"></script>
+</body>
+</html>
